@@ -2,7 +2,7 @@ name: Ordu_Saldirisi
 on: [push, workflow_dispatch]
 jobs:
   scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         thread: [1, 2, 3, 4, 5]
