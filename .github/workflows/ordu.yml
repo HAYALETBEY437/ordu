@@ -25,4 +25,4 @@ jobs:
 
       - name: Botu Sahaya Sur
         # Güncel Pinggy adresinle ateşliyoruz
-        run: python3 bot.py qjtni-34-6-91-209.run.pinggy-free.link 10101
+        run: python3 bot.py usb-metallic.gl.joinmc.link 25565
