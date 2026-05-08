@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # --- AYARLAR ---
 # Serveo'nun verdiği uzun adresi buraya yapıştır (HTTPS kısmını sil)
-TUNNEL_URL = "a581dbde67190beb-34-6-91-209.serveousercontent.com"
+TUNNEL_URL = "ddbd18f71e953411-34-6-91-209.serveousercontent.com"
 TUNNEL_PORT = 80
 # ---------------
 
