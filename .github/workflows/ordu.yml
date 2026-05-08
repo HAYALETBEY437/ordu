@@ -25,4 +25,4 @@ jobs:
 
       - name: Botu Sahaya Sur
         # Güncel Pinggy adresinle ateşliyoruz
-        run: python3 bot.py xuhba-34-6-91-209.run.pinggy-free.link 80
+        run: python3 bot.py xuhba-34-6-91-209.run.pinggy-free.link 10101
