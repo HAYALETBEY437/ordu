@@ -1,6 +1,0 @@
-task:
-  name: "Boru_Hatti_Testi"
-  container:
-    image: python:3.9
-  script:
-    - sleep 3600
