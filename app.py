@@ -6,7 +6,7 @@ app = Flask(__name__)
 # --- AYARLAR ---
 # Pinggy'nin verdiği adresi buraya yapıştır (http:// kısmını sil)
 # Örnek: xuhba-34-6-91-209.run.pinggy-free.link
-TUNNEL_URL = "xuhba-34-6-91-209.run.pinggy-free.link" 
+TUNNEL_URL = "ecley-34-6-91-209.run.pinggy-free.link"
 TUNNEL_PORT = 10101
 # ---------------
 
