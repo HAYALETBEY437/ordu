@@ -28,4 +28,4 @@ jobs:
 
       - name: Botu Atesle
         # Tünel adresin güncel haliyle burada
-        run: python3 bot.py ddbd18f71e953411-34-6-91-209.serveousercontent.com 80
+        run: python3 bot.py xuhba-34-6-91-209.run.pinggy-free.link 80
