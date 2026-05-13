@@ -3,7 +3,7 @@ from flask import Flask, request
 
 # --- AYARLAR ---
 # Buraya her zaman ssh terminalindeki GÜNCEL linki yapıştır kanka
-BEYIN_URL = "http://34.178.18.184:5000"
+BEYIN_URL = "https://d6dc63ffd0cbfb.lhr.life"
 
 app = Flask(__name__)
 
