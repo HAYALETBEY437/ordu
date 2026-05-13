@@ -6,7 +6,7 @@ from flask import Flask, request
 
 # --- AYARLAR ---
 # SSH Tünelinden aldığın o "lhr.life" linkini buraya tam olarak yapıştır
-BEYIN_URL = "https://66e882b4d1e011.lhr.life"
+BEYIN_URL = "https://f5625b8efc7fed.lhr.life"
 
 app = Flask(__name__)
 
