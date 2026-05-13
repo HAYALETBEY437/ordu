@@ -18,7 +18,7 @@ def fire():
 def register():
     while True:
         try:
-            requests.get(f"{BEYIN_URL}/kayit?port=8080", timeout=10)
+            requests.get(f"{BEYIN_URL}/kayit?port=5000", timeout=10)
         except:
             pass
         time.sleep(60)
